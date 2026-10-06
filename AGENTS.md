@@ -6,6 +6,7 @@
 - 消息协议、信箱与模板：`.agent/exchange/README.md`、`message-template.md`。
 - 项目长期索引：`.agent/project-state.md`、`decision-log.md`、`risk-register.md`、`evidence/`、`milestones/`。
 - 角色差异提示词：`.agent/prompts/`；提示词文件不是运行时配置，也不授予工具权限。
+- 可复用沙盒用例：`sandbox/README.md`；协议检查通过不等于项目运行权限已验收。
 
 固定协作拓扑：Lead / Advisor 为主要独立会话，Auditor 在 S1/S2 系统审阅时低频使用独立会话，Coder / Validator / Reviewer 仅为 Lead 调用的子代理；消息通道及角色边界见上述唯一规范。单次任务不临时改变角色会话形态。角色缺席或运行权限不满足时报告用户并暂停对应节点；项目/阶段级拓扑变更需用户明确决定与完成交接。
 
