@@ -18,6 +18,26 @@ supersedes: <被更正消息 ID 或 null>
 ---
 ```
 
+## 发信后的用户转发通知（独立会话）
+
+先写信箱消息，再从已落盘的头部填入以下各项实际值；**向用户输出完整代码块，不输出未替换的占位符**。字段规则和 `audit-start` 的生效边界见 `README.md`；这段通知不是信箱消息，也不替代原始请求。
+
+```text
+handoff_notice: 1
+to: <advisor|auditor|lead>
+cwd: <与信箱头一致的绝对项目工作目录>
+task: <与信箱头一致的任务 ID>
+message_id: <信箱头 id>
+message_path: <已写入的信箱文件绝对路径>
+from: <lead|advisor|auditor>
+kind: <与信箱头一致的消息种类>
+object_ref: <与信箱头一致的对象>
+version_ref: <与信箱头一致的版本或 unknown>
+delivery: <audit-start|notify>
+
+请以 to 指定的独立角色读取 message_path，核对 task、message_id、cwd、对象版本及有无取消或取代，再按信箱协议回执或处理。
+```
+
 ## request
 
 ```text
@@ -29,7 +49,7 @@ active / cancelled
 ## 依据（证据原件 / 假设 / 未知）
 ## 既有授权边界（注明实际来源）
 ## 流程判定（是否需独立 Validator 及理由；R1/R2/R3、S1/S2、A1/A2/A3、H1 是否触发、理由；可复用结论 ID 或无）
-## S1/S2 独立审阅委托（适用时：用户原话或 Advisor 既有委托依据 / 阶段或系统目标 / 审阅对象与版本 / 原件位置 / 用户可读报告位置）
+## S1/S2 独立审阅请求（适用时：Lead 拟定待用户转发或 Advisor 既有委托依据 / 阶段或系统目标 / 审阅对象与版本 / 只读范围与禁止事项 / 原件位置；Lead 不代写用户转发依据）
 ## A3 裁决回流（适用时：旧裁决与用户原拍板 ID / 已实施状态 / 新原件 / 暂停范围 / 待裁决问题）
 ## 需要用户重新拍板（仅 Advisor→user 且越出旧边界时：事实风险 / 明确推荐 / 请求确认的范围）
 ## 需要回复
@@ -80,4 +100,5 @@ active / cancelled
 ## 阻断项（每项：违反的条件、原始证据、影响、最小修复、复核标准）
 ## 流程复核（Validator：分类是否符合实际 diff、漏掉的必经节点及依据）
 ## 未覆盖与重开条件
+## 升级原因（仅 Auditor→user 且判定 ESCALATE：角色内无法消解的用户边界事项 / 原始 to: lead 报告位置 / 人类可判断的影响与推荐）
 ```

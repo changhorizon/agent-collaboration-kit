@@ -1,7 +1,7 @@
 ---
 id: M001
 task: TASK-AUDIT
-from: advisor
+from: lead
 to: auditor
 kind: request
 created_at: 2026-01-02T00:00:00Z
@@ -16,4 +16,4 @@ supersedes: null
 active
 
 ## S1 独立审阅委托
-示例：假定用户已限定该阶段审阅范围；实际项目须回到用户原话核对。
+示例：Lead 已拟定假阶段的审阅请求；结构检查不能证明用户已转发给 Auditor。真实项目须核对用户向独立会话的实际转发。

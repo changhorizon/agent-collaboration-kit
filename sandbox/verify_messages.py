@@ -107,8 +107,11 @@ def parse(path: Path) -> Message:
             raise ValueError("review requires a supported ## 判定")
         if verdict.startswith("PASS") and (header["object_ref"] == "unknown" or header["version_ref"] == "unknown"):
             raise ValueError("PASS needs a known object_ref and version_ref")
-        if sender == "auditor" and header["to"] != "user":
-            raise ValueError("Auditor original review must be addressed to user")
+        if sender == "auditor":
+            if header["to"] not in {"lead", "user"}:
+                raise ValueError("Auditor review must be addressed to Lead or user")
+            if header["to"] == "user" and (verdict != "ESCALATE" or not section(body, "升级原因")):
+                raise ValueError("Auditor user escalation requires ESCALATE and ## 升级原因")
     return Message(path, header, body, created_at)
 
 
@@ -131,6 +134,14 @@ def validate(root: Path) -> tuple[int, int, list[str]]:
     edges: dict[tuple[str, str], set[tuple[str, str]]] = {}
     for key, message in messages.items():
         edges[key] = set()
+        if message.header["from"] == "auditor" and message.header["kind"] == "review" and message.header["to"] == "user":
+            original = messages.get((key[0], message.header["reply_to"]))
+            if original is None or (
+                original.header["from"] != "auditor"
+                or original.header["kind"] != "review"
+                or original.header["to"] != "lead"
+            ):
+                errors.append(f"{message.path}: Auditor user escalation must reply to original review to Lead")
         for field in ("reply_to", "supersedes"):
             value = message.header[field]
             if value == "null":

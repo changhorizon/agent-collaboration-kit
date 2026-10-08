@@ -2,7 +2,7 @@
 id: M002
 task: TASK-AUDIT
 from: auditor
-to: user
+to: lead
 kind: review
 created_at: 2026-01-02T00:01:00Z
 cwd: /workspace/example-project

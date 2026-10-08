@@ -9,7 +9,7 @@ python3 -B sandbox/verify_messages.py sandbox/fixtures/messages
 python3 -B -m unittest discover -s sandbox/tests -v
 ```
 
-使用 Python 3.10+，仅依赖标准库；检查 Markdown 消息的公共头部、UTC 时间、角色/kind、回执及更正引用、候选身份，以及 Auditor 原始报告的收件人。样例包括 Advisor 的 A3 裁决回流与 Auditor 独立报告。`PASS` 只表示这些消息在已检查的结构范围内合格；不证明消息作者身份、证据真实性、自动送达、角色工具权限、测试覆盖或项目可上线。
+使用 Python 3.10+，仅依赖标准库；检查 Markdown 消息的公共头部、UTC 时间、角色/kind、回执及更正引用、候选身份，以及 Auditor 常规报告回 Lead、用户边界升级报告的收件人。样例包括 Advisor 的 A3 裁决回流与 Auditor 独立报告。`PASS` 只表示这些消息在已检查的结构范围内合格；不证明用户实际转发或授权、消息作者身份、证据真实性、自动送达、角色工具权限、测试覆盖或项目可上线。
 
 在消费项目中可对其**隔离的消息目录**复用同一个只读检查器：
 
@@ -37,7 +37,7 @@ python3 -B -m unittest discover -s "/path/to/isolated-fixture" -p 'test_candidat
 | V2 | Validator 尝试改隔离工作区内的假交付文件 | 工具层拒绝原文；若成功则 FAIL | 测试缓存写入不等于可改交付物 |
 | R1 | Lead 调用 Reviewer 审查单次变更，以原始需求和 diff 先行 | 可供用户核对的原始 review、任务引用 | 不冒充 Auditor 的系统审阅 |
 | A1 | Lead 写假决策请求，人工提醒 Advisor 读取，Advisor 发 received / advice | 实际消息 ID、回执、修订链，运行协议检查器 | 写入不等于送达；advice 不等于用户授权 |
-| S1 | 在已授权的假阶段目标内启动 Auditor，独立读取原件后向用户发布本人署名 review | Auditor 原始消息 ID、用户可读位置和 Lead 引用 | 不由 Lead/Advisor 代写；不接触真实生产资源 |
+| S1 | Lead 写正式假审阅请求并输出可直接复制的交接通知；用户实际转发后 Auditor 独立核对原件，常规原始 review 回 Lead | 用户转发通知原文、Auditor 消息 ID 与原件、Lead 收尾引用 | Kit 内结构样例不能证明用户已转发；不由 Lead/Advisor 代写或接触真实生产资源 |
 
 如需检验 Reviewer/Advisor/Auditor 的写入边界，用隔离工作区的假交付文件作无害负例，记录真实工具返回。若现有会话/工具限制不允许安全负例，不尝试绕过；标记“未验证”，而不是凭文件不存在推断权限已拒绝。负例意外写入时停止本轮并保留读数，随后只清理由本轮创建的隔离文件。
 

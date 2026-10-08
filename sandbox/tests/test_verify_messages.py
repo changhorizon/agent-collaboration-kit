@@ -25,7 +25,7 @@ class MessageChecks(unittest.TestCase):
         self.assertIn(old, text)
         path.write_text(text.replace(old, new, 1), encoding="utf-8")
 
-    def test_valid_a3_revision_and_direct_auditor_report(self):
+    def test_valid_a3_revision_and_lead_requested_auditor_report(self):
         count, tasks, errors = validate(self.root)
         self.assertEqual((count, tasks, errors), (7, 2, []))
 
@@ -63,9 +63,34 @@ class MessageChecks(unittest.TestCase):
         self.assertIn("only Advisor may issue advice", errors)
         self.assertIn("review must come from Validator, Reviewer or Auditor", errors)
 
-    def test_auditor_report_must_address_user(self):
-        self.edit("TASK-AUDIT", "M002-auditor-review.md", "to: user", "to: lead")
-        self.assertIn("Auditor original review must be addressed to user", "\n".join(validate(self.root)[2]))
+    def test_advisor_can_request_audit_with_existing_user_mandate(self):
+        self.edit("TASK-AUDIT", "M001-lead-audit-request.md", "from: lead", "from: advisor")
+        self.assertEqual(validate(self.root)[2], [])  # Existing mandate is not structurally verifiable.
+
+    def test_routine_auditor_report_must_address_lead(self):
+        self.edit("TASK-AUDIT", "M002-auditor-review.md", "to: lead", "to: user")
+        self.assertIn("Auditor user escalation requires ESCALATE", "\n".join(validate(self.root)[2]))
+
+    def test_auditor_user_escalation_requires_reason(self):
+        original = self.root / "TASK-AUDIT" / "messages" / "M002-auditor-review.md"
+        escalation = original.with_name("M003-auditor-escalation.md")
+        escalation.write_text(
+            original.read_text(encoding="utf-8")
+            .replace("id: M002", "id: M003", 1)
+            .replace("to: lead", "to: user", 1)
+            .replace("00:01:00Z", "00:02:00Z", 1)
+            .replace("reply_to: M001", "reply_to: M002", 1)
+            .replace("PASS WITH WARNINGS", "ESCALATE", 1),
+            encoding="utf-8",
+        )
+        self.assertIn("requires ESCALATE and ## 升级原因", "\n".join(validate(self.root)[2]))
+        self.edit(
+            "TASK-AUDIT", "M003-auditor-escalation.md",
+            "## 审阅角色与范围", "## 升级原因\n超出角色范围的用户授权边界。\n\n## 审阅角色与范围",
+        )
+        self.assertEqual(validate(self.root)[2], [])
+        self.edit("TASK-AUDIT", "M003-auditor-escalation.md", "reply_to: M002", "reply_to: M001")
+        self.assertIn("must reply to original review to Lead", "\n".join(validate(self.root)[2]))
 
     def test_subagent_result_cannot_claim_direct_user_delivery(self):
         self.edit("TASK-DEMO", "M002-advisor-received.md", "from: advisor", "from: coder")
