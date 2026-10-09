@@ -13,8 +13,8 @@ FIELDS = {
     "id", "task", "from", "to", "kind", "created_at", "cwd",
     "object_ref", "version_ref", "reply_to", "supersedes",
 }
-ROLES = {"lead", "coder", "validator", "reviewer", "auditor", "advisor"}
-KINDS = {"request", "received", "result", "advice", "review"}
+ROLES = {"lead", "coder", "validator", "reviewer", "auditor", "advisor", "ally"}
+KINDS = {"request", "received", "result", "advice", "review", "delegation"}
 VERDICTS = {"PASS", "PASS WITH WARNINGS", "FAIL", "ESCALATE"}
 IDENTIFIER = re.compile(r"[A-Za-z0-9][A-Za-z0-9_.-]*\Z")
 
@@ -97,6 +97,18 @@ def parse(path: Path) -> Message:
         status = section(body, "指令状态")
         if status not in {"active", "cancelled"}:
             raise ValueError("request requires ## 指令状态: active or cancelled")
+    if kind == "delegation":
+        if sender != "ally":
+            raise ValueError("only Ally may issue a delegation")
+        if header["to"] not in {"lead", "advisor", "auditor"}:
+            raise ValueError("delegation must be addressed to Lead, Advisor or Auditor")
+        status = section(body, "指令状态")
+        if status not in {"active", "cancelled"}:
+            raise ValueError("delegation requires ## 指令状态: active or cancelled")
+        if not section(body, "用户委托依据"):
+            raise ValueError("delegation requires ## 用户委托依据 (mandate evidence)")
+    if sender == "ally" and kind not in {"delegation", "received"}:
+        raise ValueError("Ally may only issue delegation or received")
     if kind == "advice" and sender != "advisor":
         raise ValueError("only Advisor may issue advice")
     if kind == "review" and sender not in {"validator", "reviewer", "auditor"}:

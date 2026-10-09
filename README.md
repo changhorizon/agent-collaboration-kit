@@ -4,15 +4,15 @@
 
 - [完整协作规范](.agent/collaboration.md)：唯一的角色、触发条件与授权规则来源。
 - [统一消息协议](.agent/exchange/README.md)：独立会话信箱与子代理返回的消息语义。
-- [客户端无关角色内容](.agent/prompts/)：六个角色唯一的通用操作内容，供各客户端适配引用。
+- [客户端无关角色内容](.agent/prompts/)：各角色唯一的通用操作内容，供各客户端适配引用。
 - [沙盒验证](sandbox/README.md)：可复用协议检查、虚构用例与项目接入冒烟说明。
-- [OpenCode 角色适配基线](integrations/opencode/README.md)：六份可手动复制的角色定义副本及只读漂移检查；是派生适配而非协作权威，不由 Kit 安装器写入系统配置。
+- [OpenCode 角色适配基线](integrations/opencode/README.md)：七份可手动复制的角色定义副本及只读漂移检查；是派生适配而非协作权威，不由 Kit 安装器写入系统配置。
 
 版本通过 Git 提交和标签追溯；工作树只保留现行规范，不按版本复制多份文件。
 
 ## 角色与工作流
 
-Lead 是用户的日常入口；Coder、Validator、Reviewer 是任务限定的子代理。Advisor 独立处理重大技术取舍；Auditor 在阶段或系统性问题触发时独立审阅，常规原始报告回 Lead，用户可按需直接核对。两个独立角色与 Lead 均通过共享信箱交接，用户负责在无自动通知机制时转发正式消息。六个角色不代表六个常驻窗口或六种必须使用的模型。
+Lead 是项目执行主会话；Ally 是可选用户入口，启用时用户面对 Ally、未启用时用户直接使用 Lead。Coder、Validator、Reviewer 是任务限定的子代理。Advisor 独立处理重大技术取舍；Auditor 在阶段或系统性问题触发时独立审阅，常规原始报告回 Lead，用户可按需直接核对。独立角色与 Lead 均通过共享信箱交接，用户负责在无自动通知机制时转发正式消息。七个角色（Ally 可选）不代表七个常驻窗口或七种必须使用的模型；Ally 尚未接入自动会话启动或自动投递。
 
 普通任务由 Lead 定义范围、调度实现、组织检查并交付；只有命中规范中的条件才增加变更级 Reviewer、系统级 Auditor 或 Advisor 裁决。技术建议、独立验收、用户风险接受与执行授权不能互相替代。完整权限与流程以协作规范为准，此处不重复维护。
 
@@ -58,7 +58,7 @@ sandbox/                   可复用协议样例、检查器与项目接入冒�
 scripts/install.py         将静态协议安装到消费方 .agents/ 并更新其 AGENTS.md
 integrations/opencode/      完整角色定义基线（派生适配，非自动运行配置）与核对说明
 integrations/codex/         Codex 适配计划（尚未接线，未实现）
-scripts/check_opencode_agents.py  只读比较六份基线和指定目录的定义
+scripts/check_opencode_agents.py  只读比较七份基线和指定目录的定义
 ```
 
 ## 状态与许可

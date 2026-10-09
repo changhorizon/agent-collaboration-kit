@@ -1,11 +1,11 @@
 #!/usr/bin/env python3
-"""Compare six versioned OpenCode agent definitions with an explicit directory."""
+"""Compare seven versioned OpenCode agent definitions with an explicit directory."""
 
 import argparse
 from pathlib import Path
 
 
-ROLES = ("lead", "coder", "validator", "reviewer", "advisor", "auditor")
+ROLES = ("lead", "coder", "validator", "reviewer", "advisor", "auditor", "ally")
 SNAPSHOT = Path(__file__).resolve().parents[1] / "integrations" / "opencode" / "agents"
 
 

@@ -6,6 +6,7 @@
 
 - Lead ↔ Coder / Validator / Reviewer：Lead 经子代理调用工具传 request，分别接收 result / review / review；无需日常信箱消息或人工提醒。调用者保留足以定位的调用/返回痕迹。
 - Lead ↔ Advisor / Auditor：独立会话使用同一个绝对信箱路径交换请求与回复。Lead 命中 S1/S2 时先写 `to: auditor` 的正式只读审阅请求；用户将准确指向该请求的交接通知转发到 Auditor 独立会话，即发起该次限定范围审阅。Advisor 在既有用户委托内也可发起。Auditor 的常规原始审阅报告发给 Lead，用户可直接从信箱查阅。项目接入时设定共享绝对路径（默认可用项目根下 `.agent/exchange/tasks/`）。在经实际验收的自动通知机制出现前，默认由用户转发本文件定义的交接通知；若未来采用通知机制，须单独确定 Auditor 审阅的授权语义。相同相对路径在不同 worktree 下不是同一信箱。
+- Ally ↔ Lead / Advisor / Auditor（启用 Ally 时）：复用同一绝对信箱路径；Ally 以 `delegation` 交任务/代传，以 `received` 回执，作有记录的传送者，保留原作者署名。Ally 不是任何独立角色的父会话，不改变 Lead 对 Coder / Validator / Reviewer 的子代理调用。
 - 消息内容与语义不随通道改变；`tasks/` 为运行消息目录，是否忽略/备份由项目明确配置，不因本模板存在而自动生效。
 
 固定载体与拓扑变更边界见 `../collaboration.md` 第 2.2 节。此处只定义投递：子代理返回不自动写入信箱；独立窗口的文件不会被子代理工具自动收到。角色权限与用户授权不能借转存消息或会话交接提升；旧版本的验收不因交接而适用于新版本。
@@ -18,13 +19,14 @@ Lead / Advisor / Auditor 向独立会话写完一条完整信箱消息后，先�
 
 ```text
 handoff_notice: 1
-to: <advisor|auditor|lead>
+to: <advisor|auditor|lead|ally>
 cwd: <项目工作目录绝对路径>
 task: <任务 ID>
 message_id: <信箱消息 ID>
 message_path: <信箱文件绝对路径>
-from: <lead|advisor|auditor>
-kind: <request|received|result|advice|review>
+from: <lead|advisor|auditor|ally>
+delivered_by: <user|ally>
+kind: <request|received|result|advice|review|delegation>
 object_ref: <信箱消息中的对象>
 version_ref: <信箱消息中的实际版本或 unknown>
 delivery: <audit-start|notify>
@@ -32,9 +34,9 @@ delivery: <audit-start|notify>
 请以 to 指定的独立角色读取 message_path，核对 task、message_id、cwd、对象版本及有无取消或取代，再按信箱协议回执或处理。
 ```
 
-`to`、`from`、`kind`、`task`、`message_id`、`object_ref`、`version_ref` 和 `cwd` 必须与已写入的信箱消息头一致；`message_path` 必须指向该文件，不能只给目录、相对路径或示例值。此通知是**投递封面**，不是另一条信箱消息，不复制正文或改写审阅范围；用户只需复制代码块全文并发送给 `to` 指定的独立会话。通知只适用于目标为 Lead / Advisor / Auditor 的信箱消息；发给用户的决策请求或边界升级直接给用户简明说明，不制作转发通知。通知没有产生 `received`，也不能证明收件人实际读取；文件不存在、头部不完整或版本不明时须先按原件纠正或如实标 `unknown`，不得编造值。
+`to`、`from`、`kind`、`task`、`message_id`、`object_ref`、`version_ref` 和 `cwd` 必须与已写入的信箱消息头一致；`message_path` 必须指向该文件，不能只给目录、相对路径或示例值。`from` 是**原作者**，`delivered_by` 是**实际送达者**：用户本人转发填 `user`，Ally 代传填 `ally`（`ally` 目前为保留值，接线前只认 `user`，见下 audit-start 说明）；二者不得混淆，Ally 不得把 `from` 写成 `lead`/`advisor`/`auditor` 来冒充作者。此通知是**投递封面**，不是另一条信箱消息，不复制正文或改写审阅范围；用户只需复制代码块全文并发送给 `to` 指定的独立会话。通知只适用于目标为 Lead / Advisor / Auditor / Ally 的信箱消息；发给用户的决策请求或边界升级直接给用户简明说明，不制作转发通知。通知没有产生 `received`，也不能证明收件人实际读取；文件不存在、头部不完整或版本不明时须先按原件纠正或如实标 `unknown`，不得编造值。
 
-`delivery: audit-start` **仅**用于 Lead 写给 Auditor 的正式 S1/S2 `request`。用户实际向 Auditor 独立会话转发该通知，等同于转发它精确指向的正式请求，仅发起该请求列明的只读审阅；用户标明“仅供讨论”则不启动。其他独立会话消息一律 `delivery: notify`，包括 Lead→Advisor、Advisor→Auditor 既有委托以及 Advisor/Auditor→Lead 的回复；转发仅是投递，不表示用户认可裁决或审阅结果。通知标记本身及信箱文字都不能伪造用户的实际转发。将来更换送达机制时，消费相同字段但不能自行把自动投递解释为用户审阅授权。
+`delivery: audit-start` **仅**用于 Lead 写给 Auditor 的正式 S1/S2 `request`。用户实际向 Auditor 独立会话转发该通知（`delivered_by: user`），等同于转发它精确指向的正式请求，仅发起该请求列明的只读审阅；用户标明“仅供讨论”则不启动。**现阶段只认 `delivered_by: user` 的用户本人转发**（或 Advisor 在既有用户委托内发起）；`delivered_by: ally` 的 Ally 代投是**保留给未来运行时接线后的路径，接线前不生效、不改变“用户本人转发”这一现行发起条件**，届时还须确定通知如何承载委托引用及 Auditor 如何核验委托来源。其他独立会话消息一律 `delivery: notify`，包括 Lead→Advisor、Advisor→Auditor 既有委托以及 Advisor/Auditor→Lead 的回复；转发仅是投递，不表示用户认可裁决或审阅结果。通知标记本身及信箱文字都不能伪造用户的实际转发。将来更换送达机制时，消费相同字段但不能自行把自动投递解释为用户审阅授权。
 
 ## 公共头部
 
@@ -42,9 +44,9 @@ delivery: <audit-start|notify>
 ---
 id: <该任务内唯一且不复用的消息 ID；跨任务引用时用 task + id>
 task: <唯一任务 ID>
-from: <lead|coder|validator|reviewer|auditor|advisor>
-to: <lead|coder|validator|reviewer|auditor|advisor|user>
-kind: <request|received|result|advice|review>
+from: <lead|coder|validator|reviewer|auditor|advisor|ally>
+to: <lead|coder|validator|reviewer|auditor|advisor|ally|user>
+kind: <request|received|result|advice|review|delegation>
 created_at: <发布时实际读取的 UTC ISO-8601>
 cwd: <发送方工作目录绝对路径>
 object_ref: <本次对象/环境/制品；未确定则写 unknown>
@@ -61,6 +63,7 @@ supersedes: <被更正/取代的消息 ID 或 null>
 ## 消息类型与正文
 
 - `request`：Lead 派发任务/决策请求，写目标、范围与禁止项、原始需求/证据索引、验收条件、既有授权边界、Validator 是否适用及 R1/R2/R3、S1/S2、A1/A2/A3、H1 的流程判定、需要回复。A3 回流时额外写旧裁决 ID、已实施状态、新证据、暂停动作和具体待裁决问题。S1/S2 时由 Lead 拟定并写入本人署名的 `to: auditor` 请求，列出阶段/系统目标、对象版本、原件、限定的只读范围和禁止事项；**用户实际向 Auditor 会话转发准确指向这条请求的 `audit-start` 交接通知**才发起本次审阅，标明“仅供讨论”则不发起。Advisor 可在既有用户委托范围内发起 Auditor 请求；用户对话不伪造为 `from: user` 文件。请求中的 `active` 仅表示发送方尚未取消，不能证明用户已转发、接收者已读或获得其他权限。Advisor 仅在用户方向、范围、体验、关键风险或授权边界变化时向用户提出聚焦拍板请求，附明确推荐与人类可判断的影响，不把未整理的技术题交给用户。取消或缩小范围通过新增 request 且 `supersedes` 指向被取代的请求，不回写旧文件。
+- `delegation`：Ally 写给 Lead / Advisor / Auditor 的用户侧任务委托或代传说明，写任务 ID、目标与验收、用户确认的边界与授权范围、原始对话/文件指针、目标项目生效协议、实际 cwd、共享信箱绝对路径、相关仓库/工作树版本及待核实未知，并区分“Ally 推荐 / 用户已确认 / 待核实”。正文须含 `## 指令状态`（active / cancelled）与 `## 用户委托依据`。委托是授权指针而非授权本身；收件方须回用户原件核对，不把 Ally 转述当授权依据。取消或缩小范围通过新增 delegation 且 `supersedes` 指向被取代的委托，不回写旧文件。
 - `received`：接手回执，说明已读并检查有无取消/取代。只表示收到；不表示已执行、完成、审核或获授权。
 - `result`：执行者报告实际变更、diff/测试命令与读数、环境及实际版本、遗留事项；Lead 收尾时写流程闭合与可结束阶段。执行结果不等于独立验收。
 - `advice`：Advisor 写明确推荐、可执行方案及适用前提、证据/限制、反对意见及会推翻推荐的新事实。修订旧裁决时引用旧 ID 与实际实施状态，逐项指出失效/未受影响范围；需要用户重新拍板时注明原始对话依据，未取得前标为待用户确认。技术裁决不是验收或用户授权。

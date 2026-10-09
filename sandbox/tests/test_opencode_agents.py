@@ -32,7 +32,7 @@ class OpenCodeAgentChecks(unittest.TestCase):
     def test_exact_snapshot_matches(self):
         result = self.run_check()
         self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
-        self.assertEqual(result.stdout.count("MATCH:"), 6)
+        self.assertEqual(result.stdout.count("MATCH:"), 7)
 
     def test_drift_and_missing_file_fail_without_printing_contents(self):
         (self.installed / "lead.md").write_text("changed role\n", encoding="utf-8")

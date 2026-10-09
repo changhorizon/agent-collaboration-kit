@@ -27,7 +27,7 @@ class MessageChecks(unittest.TestCase):
 
     def test_valid_a3_revision_and_lead_requested_auditor_report(self):
         count, tasks, errors = validate(self.root)
-        self.assertEqual((count, tasks, errors), (7, 2, []))
+        self.assertEqual((count, tasks, errors), (9, 3, []))
 
     def test_disposable_candidate_check_is_sensitive_to_change(self):
         workspace = Path(self.temp.name) / "project"
@@ -114,6 +114,22 @@ class MessageChecks(unittest.TestCase):
         directory = self.root / "TASK-DEMO" / "messages"
         shutil.copyfile(directory / "M001-lead-request.md", directory / "duplicate.md")
         self.assertIn("duplicate message ID within task", "\n".join(validate(self.root)[2]))
+
+    def test_ally_delegation_requires_mandate_evidence(self):
+        self.edit("TASK-ALLY", "M001_ally_to_lead_delegation.md", "## 用户委托依据", "## 委托说明")
+        self.assertIn("delegation requires ## 用户委托依据", "\n".join(validate(self.root)[2]))
+
+    def test_delegation_must_come_from_ally(self):
+        self.edit("TASK-ALLY", "M001_ally_to_lead_delegation.md", "from: ally", "from: lead")
+        self.assertIn("only Ally may issue a delegation", "\n".join(validate(self.root)[2]))
+
+    def test_delegation_target_must_be_independent_role(self):
+        self.edit("TASK-ALLY", "M001_ally_to_lead_delegation.md", "to: lead", "to: coder")
+        self.assertIn("delegation must be addressed to Lead, Advisor or Auditor", "\n".join(validate(self.root)[2]))
+
+    def test_ally_may_only_issue_delegation_or_received(self):
+        self.edit("TASK-ALLY", "M001_ally_to_lead_delegation.md", "kind: delegation", "kind: result")
+        self.assertIn("Ally may only issue delegation or received", "\n".join(validate(self.root)[2]))
 
 
 if __name__ == "__main__":

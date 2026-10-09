@@ -8,7 +8,7 @@ id: <唯一消息 ID>
 task: <任务 ID>
 from: <角色>
 to: <角色或 user>
-kind: <request|received|result|advice|review>
+kind: <request|received|result|advice|review|delegation>
 created_at: <发布时实际读取的 UTC ISO-8601；无可靠时钟不填猜测值>
 cwd: <绝对工作目录>
 object_ref: <实际对象或 unknown>
@@ -24,12 +24,13 @@ supersedes: <被更正消息 ID 或 null>
 
 ```text
 handoff_notice: 1
-to: <advisor|auditor|lead>
+to: <advisor|auditor|lead|ally>
 cwd: <与信箱头一致的绝对项目工作目录>
 task: <与信箱头一致的任务 ID>
 message_id: <信箱头 id>
 message_path: <已写入的信箱文件绝对路径>
-from: <lead|advisor|auditor>
+from: <lead|advisor|auditor|ally>
+delivered_by: <user|ally>
 kind: <与信箱头一致的消息种类>
 object_ref: <与信箱头一致的对象>
 version_ref: <与信箱头一致的版本或 unknown>
@@ -52,6 +53,20 @@ active / cancelled
 ## S1/S2 独立审阅请求（适用时：Lead 拟定待用户转发或 Advisor 既有委托依据 / 阶段或系统目标 / 审阅对象与版本 / 只读范围与禁止事项 / 原件位置；Lead 不代写用户转发依据）
 ## A3 裁决回流（适用时：旧裁决与用户原拍板 ID / 已实施状态 / 新原件 / 暂停范围 / 待裁决问题）
 ## 需要用户重新拍板（仅 Advisor→user 且越出旧边界时：事实风险 / 明确推荐 / 请求确认的范围）
+## 需要回复
+```
+
+## delegation
+
+```text
+## 指令状态
+active / cancelled
+## 用户委托依据（授权指针：原始对话/文件指针、用户确认的时间与范围；不复制敏感原件）
+## 目标与验收
+## 用户确认的边界与授权范围（Ally 推荐 / 用户已确认 / 待核实 须分开标注）
+## 目标项目生效协议、实际 cwd、共享信箱绝对路径
+## 相关仓库 / 工作树版本与待核实未知
+## 代发起审阅（仅未来运行时接线、完成委托核验与实测后适用；现阶段不填，S1/S2 仍由用户本人转发 audit-start）
 ## 需要回复
 ```
 

@@ -29,6 +29,7 @@ FILES = (
     "project-state.md",
     "risk-register.md",
     "prompts/advisor.md",
+    "prompts/ally.md",
     "prompts/auditor.md",
     "prompts/coder.md",
     "prompts/lead.md",
@@ -37,11 +38,11 @@ FILES = (
 )
 ENTRY = """## Agent Collaboration Kit（可选）
 
-仅当本项目实际以 Lead 为主会话/用户入口角色运行时，使用本项目安装的
+仅当本项目实际以 Lead 为主会话运行时（启用可选入口 Ally 时经 Ally），使用本项目安装的
 `.agents/agent-collaboration-kit/collaboration.md`；消息语法见本项目
 `.agents/agent-collaboration-kit/exchange/README.md`。本地完整协议优先，上级协作
 协议不叠加；项目原有业务规则及上级工作空间的文件权限、Git 规则继续生效。
-文档安装不代表角色权限和通知已接线或验收。
+文档安装不代表角色权限和通知已接线或验收，也不自动启用 Ally。
 """
 
 
