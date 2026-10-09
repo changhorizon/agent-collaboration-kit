@@ -1,5 +1,7 @@
 .agent/exchange/tasks/
 sandbox/tmp*/
+/plans/*
+!/plans/README.md
 
 __pycache__/
 *.py[cod]
