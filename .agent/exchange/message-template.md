@@ -9,7 +9,7 @@ task: <任务 ID>
 from: <角色>
 to: <角色或 user>
 kind: <request|received|result|advice|review>
-created_at: <UTC ISO-8601>
+created_at: <发布时实际读取的 UTC ISO-8601；无可靠时钟不填猜测值>
 cwd: <绝对工作目录>
 object_ref: <实际对象或 unknown>
 version_ref: <实际版本/工作树身份或 unknown>

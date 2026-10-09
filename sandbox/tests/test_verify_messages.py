@@ -102,6 +102,10 @@ class MessageChecks(unittest.TestCase):
         self.edit("TASK-DEMO", "M001-lead-request.md", "2026-01-01T00:00:00Z", "2026-01-01T00:00:00+00:00")
         self.assertEqual(validate(self.root)[2], [])
 
+    def test_date_only_clock_denial_is_not_a_utc_timestamp(self):
+        self.edit("TASK-AUDIT", "M002-auditor-review.md", "2026-01-02T00:01:00Z", "2026-01-02 (clock denied)")
+        self.assertIn("created_at must be UTC ISO-8601", "\n".join(validate(self.root)[2]))
+
     def test_pass_does_not_cover_unknown_artifact(self):
         self.edit("TASK-AUDIT", "M002-auditor-review.md", "version_ref: candidate-a", "version_ref: unknown")
         self.assertIn("PASS needs a known object_ref and version_ref", "\n".join(validate(self.root)[2]))

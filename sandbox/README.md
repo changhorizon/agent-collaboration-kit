@@ -9,7 +9,7 @@ python3 -B sandbox/verify_messages.py sandbox/fixtures/messages
 python3 -B -m unittest discover -s sandbox/tests -v
 ```
 
-使用 Python 3.10+，仅依赖标准库；检查 Markdown 消息的公共头部、UTC 时间、角色/kind、回执及更正引用、候选身份，以及 Auditor 常规报告回 Lead、用户边界升级报告的收件人。样例包括 Advisor 的 A3 裁决回流与 Auditor 独立报告。`PASS` 只表示这些消息在已检查的结构范围内合格；不证明用户实际转发或授权、消息作者身份、证据真实性、自动送达、角色工具权限、测试覆盖或项目可上线。
+使用 Python 3.10+，仅依赖标准库；检查 Markdown 消息的公共头部、UTC 时间格式、角色/kind、回执及更正引用、候选身份，以及 Auditor 常规报告回 Lead、用户边界升级报告的收件人。样例包括 Advisor 的 A3 裁决回流与 Auditor 独立报告。`PASS` 只表示这些消息在已检查的结构范围内合格；**不能证明格式正确的时间戳来自真实时钟**，也不证明用户实际转发或授权、消息作者身份、证据真实性、自动送达、角色工具权限、测试覆盖或项目可上线。
 
 在消费项目中可对其**隔离的消息目录**复用同一个只读检查器：
 
