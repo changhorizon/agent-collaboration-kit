@@ -9,6 +9,15 @@ import tempfile
 from pathlib import Path
 
 SOURCE = Path(__file__).resolve().parents[1] / ".agent"
+# Blank static templates for the state files. They are kept separate from the
+# live .agent/ runtime state so that locally filled project state never leaks
+# into consumer installations.
+TEMPLATES = Path(__file__).resolve().parents[1] / "templates"
+STATE_FILES = (
+    "decision-log.md",
+    "project-state.md",
+    "risk-register.md",
+)
 RELATIVE_DEST = Path(".agents/agent-collaboration-kit")
 FILES = (
     "collaboration.md",
@@ -36,6 +45,17 @@ ENTRY = """## Agent Collaboration Kit（可选）
 """
 
 
+def package_source(relative: str) -> Path:
+    """Return the static source for a packaged relative path.
+
+    State files come from the blank templates, never from the live .agent/
+    runtime state in this repository.
+    """
+    if relative in STATE_FILES:
+        return TEMPLATES / relative
+    return SOURCE / relative
+
+
 def install(target: Path, dry_run: bool = False) -> list[str]:
     if not target.is_dir() or target.is_symlink():
         raise ValueError("target must be an existing, non-symlink directory")
@@ -60,7 +80,7 @@ def install(target: Path, dry_run: bool = False) -> list[str]:
         raise ValueError("AGENTS.md mentions this kit without a local installation pointer; merge manually")
     add_entry = pointer not in existing
     for relative in FILES:
-        source = SOURCE / relative
+        source = package_source(relative)
         if not source.is_file() or source.is_symlink():
             raise ValueError(f"missing or linked package source: {relative}")
     planned = [f"{destination / relative}" for relative in FILES]
@@ -75,7 +95,7 @@ def install(target: Path, dry_run: bool = False) -> list[str]:
         for relative in FILES:
             output = staging / relative
             output.parent.mkdir(parents=True, exist_ok=True)
-            shutil.copy2(SOURCE / relative, output)
+            shutil.copy2(package_source(relative), output)
         staging.rename(destination)
 
     if add_entry:
