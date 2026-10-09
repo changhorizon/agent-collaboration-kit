@@ -5,8 +5,8 @@
 - 协作规范与触发规则：`.agent/collaboration.md`。
 - 消息协议、信箱与模板：`.agent/exchange/README.md`、`message-template.md`。
 - 项目长期索引：`.agent/project-state.md`、`decision-log.md`、`risk-register.md`、`evidence/`、`milestones/`。
-- 角色差异提示词：`.agent/prompts/`；提示词文件不是运行时配置，也不授予工具权限。
-- OpenCode 完整角色定义副本：`integrations/opencode/agents/`；仅作基线核对与手动安装，不作为消费项目的协议入口或自动覆盖本机配置。
+- 客户端无关角色内容：`.agent/prompts/`；提示词文件不是运行时配置，也不授予工具权限，各客户端适配须引用而非另立职责。
+- OpenCode 角色定义副本：`integrations/opencode/agents/`；是派生适配而非协作权威，仅作基线核对与手动安装，不作为消费项目的协议入口或自动覆盖本机配置。
 - 可复用沙盒用例：`sandbox/README.md`；协议检查通过不等于项目运行权限已验收。
 - 安装流程：`scripts/install.py`；遇到项目已有本地完整协议时停止，不自动替换。
 

@@ -4,8 +4,9 @@
 
 - [完整协作规范](.agent/collaboration.md)：唯一的角色、触发条件与授权规则来源。
 - [统一消息协议](.agent/exchange/README.md)：独立会话信箱与子代理返回的消息语义。
+- [客户端无关角色内容](.agent/prompts/)：六个角色唯一的通用操作内容，供各客户端适配引用。
 - [沙盒验证](sandbox/README.md)：可复用协议检查、虚构用例与项目接入冒烟说明。
-- [OpenCode 完整角色基线](integrations/opencode/README.md)：六份可手动复制的角色定义副本及只读漂移检查；不由 Kit 安装器写入系统配置。
+- [OpenCode 角色适配基线](integrations/opencode/README.md)：六份可手动复制的角色定义副本及只读漂移检查；是派生适配而非协作权威，不由 Kit 安装器写入系统配置。
 
 版本通过 Git 提交和标签追溯；工作树只保留现行规范，不按版本复制多份文件。
 
@@ -52,10 +53,11 @@ AGENTS.md                    本仓库维护入口（不复制给消费方）
   exchange/README.md         唯一消息协议定义
   exchange/message-template.md  消息填写模板
   exchange/tasks/            首次使用时创建的运行消息目录；自行配置忽略与权限
-  prompts/                   可选的角色差异提示词
+  prompts/                   客户端无关的角色操作内容（唯一通用角色源）
 sandbox/                   可复用协议样例、检查器与项目接入冒烟用例
 scripts/install.py         将静态协议安装到消费方 .agents/ 并更新其 AGENTS.md
-integrations/opencode/      完整角色定义基线（非自动运行配置）与核对说明
+integrations/opencode/      完整角色定义基线（派生适配，非自动运行配置）与核对说明
+integrations/codex/         Codex 适配计划（尚未接线，未实现）
 scripts/check_opencode_agents.py  只读比较六份基线和指定目录的定义
 ```
 
