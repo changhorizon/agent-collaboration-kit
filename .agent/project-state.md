@@ -4,7 +4,7 @@
 
 ## 当前目标与工作对象
 
-- 任务 ID / 目标：KIT-UPGRADE-NEXTGEN-001 / 基于 Quant 协作实践升级 agent-collaboration-kit，减少重复指挥、重复审批、人工搬运消息、候选与报告错位、事后补找证据，同时保留用户授权、独立审阅与原件可追溯。
+- 任务 ID / 目标：KIT-UPGRADE-NEXTGEN-001 / 基于 Quant 协作实践升级 agent-collaboration-kit。当前轮次＝安装迁移：升级 `scripts/install.py` 使升级可辨认已装/目标版本、覆盖清单、项目定制冲突与恢复路径，且不覆盖消费项目信箱/决策/风险/证据。
 - 范围 / 不做事项：第一阶段有限升级设计（已落盘 `plans/2026-11-14_001_nextgen-collab-upgrade.md`，本地）+ 协议/模板定向改写 + 最小工具集 + 独立验证 / 不重写整套协议、不建 Agent 调度平台、不接自动投递/自动会话/Ally 代发起审阅、不做 Codex 适配、不改 Quant、不自动推送/发布/安装到消费项目。
 - 项目根与共享信箱绝对路径：/mnt/stage/workspace/projects/ai/agent-collaboration-kit ／ .agent/exchange/tasks/（本任务 `KIT-UPGRADE-NEXTGEN-001`）。
 - 当前候选（代码 commit + 工作树状态 / 制品版本 / 依赖）：HEAD=`5ffccce`（领先 origin/main 8 提交，未推送）。工作树未提交改动：`.agent/collaboration.md`（§3.1.2/§3.1.4/§4.1/§6.1/§7 改写，Lead 直接实现）、`templates/project-state.md`（新增当前有效状态节）、`.agent/prompts/lead.md`（同步）、`scripts/collab.py` + `sandbox/tests/test_collab_tool.py`（本地工具，Coder 实现，已修 B1/B3/W1/W5）；运行状态 `decision-log.md`（D-005）、本索引 `project-state.md`、`risk-register.md`（R-001=Open，上一阶段填充的未提交运行状态，本轮未改动）。设计稿在 Git 忽略的 `plans/`，非候选。上轮 S1-KIT-001 状态已由 decision-log.md D-001/D-002/D-004 收口。
@@ -13,7 +13,7 @@
 ## 当前有效决定、授权与待投递入口
 
 - 当前有效入口（按“技术问题/请求链 + 收件范围”，每条链一个）：A1-Q1/Q2 已由 ADVISOR-M002 裁决（Q1=混合/三平面，Q2=逐项强制），D-005 采纳，无待用户决定项。
-- 已获授权的动作（引用真实用户决定）：用户在本对话对「范围与资源一次性确认」选择“按设计确认并推进（推荐）”，授权“进入协议定向改写 + 工具 + 独立验证”（预算 Coder≤2、Validator≤2、Reviewer≤1、Advisor 仅 M001 往返、Auditor 不触发）。未授权：推送/发布、改 Quant、运行时接线、安装迁移、生产操作。
+- 已获授权的动作（引用真实用户决定）：①用户对「范围与资源一次性确认」选择“按设计确认并推进（推荐）”，授权“协议定向改写 + 工具 + 独立验证”；②用户后续“按照顺序推进”授权“安装迁移（install.py 升级）”。未授权：推送/发布、改 Quant、运行时接线、安装到 Quant、生产操作。
 - 待投递 / 待接手 / 待裁决：无待投递消息；M001→ADVISOR-M002 往返已完成（用户已转发）。
 - 状态投影来源：信箱 `KIT-UPGRADE-NEXTGEN-001/`（M001、ADVISOR-M002）；裁决正文以 ADVISOR-M002 为准。
 
@@ -32,7 +32,7 @@
 - 执行授权：用户已一次性确认范围与资源（本对话）。
 - 部署：不适用。
 - 目标环境观察：不适用。
-- 当前可收尾到哪一步：本阶段（协议改写 + 最小工具 + 独立验证）已完成并通过 Validator/Reviewer（均 PASS WITH WARNINGS，无阻断），**已提交**（629890c / 3d3e8d5 / c66eb39，未推送，main 领先 origin/main 11 提交）。Ally 离线回放已完成（见 decision-log.md D-007、evidence/ally-offline-replay-2026-11-14.md）。安装迁移、运行时接线、Quant 重新安装为后续独立阶段。
+- 当前可收尾到哪一步：安装迁移已实现并过 Validator（PASS WITH WARNINGS，W1/W2/W4 闭合；残留 R1/R2/R3 见 risk-register R-003），待提交。协议升级（629890c/3d3e8d5/c66eb39）与 Ally 离线回放（1404742）已提交。剩余：版本发布（tag+push，需授权）、安装到 Quant（需授权）、运行时接线、Ally 有限试用。
 
 ## 关键事实、假设和原件索引
 

@@ -102,3 +102,21 @@
 - 实施中出现新证据时：无。
 - 哪些新证据会重开决策：若需启用 Ally 或接线运行时，须另行立项并重判；若回放扩展到噪音/多项目场景，按结果修订初判。
 - 取代旧结论时：无。
+
+## 2026-11-15 D-008 — 安装迁移（install.py 版本戳/冲突/恢复）
+
+- 关联 task / request / advice / review：KIT-UPGRADE-NEXTGEN-001 的安装迁移轮次（Coder 实现 + Validator 验收，无 Advisor/Reviewer 触发）。
+- 待决问题与选项：install.py 升级以何形态提供版本戳、升级、冲突可见与恢复；是否作为 A1 交 Advisor。
+- 技术推荐及给出者：Lead 判定无 A1 级取舍，直接实现（版本戳 `.kit-version.json`、`--upgrade`/`--force`/`--backup-dir`、manifest 分类 add/unchanged/changed/restore/preserve、状态文件 preserve/restore/拒绝非普通、原子 staging + 备份、不碰 `.agent/`）。
+- 最终选择、选择者与理由：如上实现。理由：方向由原任务重点 #6 与交接备忘明确（辨认已装/目标版本、覆盖清单、冲突可见、恢复路径、不覆盖运行数据），无互斥分叉。
+- 验证结果：Validator 首轮 PASS WITH WARNINGS（W1 状态文件 preserve 语义对 symlink/目录/缺失不成立、W2 upgrade 未校验源、W4 文档未同步）→ Coder 修复 → Validator 复验 PASS WITH WARNINGS（W1/W2/W4 闭合、W3 闭合；残留 R1 非清单文件静默删除、R2 备份失败误报、R3 AGENTS.md 非原子，均低风险非阻断）。
+- [E] 原始证据、对象与版本：`scripts/install.py`、`sandbox/tests/test_install.py`、`README.md`（相对 HEAD=1404742 未提交）；`python3 -B -m unittest discover -s sandbox/tests -v` = 93 tests OK；`git diff --check` 干净。
+- [A] 未核实前提、未知与影响：未在 Python 3.10 实机跑（本机 3.12.13，仅语法解析通过）；未测 Windows/跨平台、崩溃一致性、并发 upgrade、真实消费项目。
+- 可逆性 / 残余风险：Git 可回溯；残余风险=R1（安装目录内非清单文件被静默删除）、R2/R3（备份失败误报、AGENTS.md 非原子），已记 risk-register R-003。
+- 是否需用户授权：否（在用户「按顺序推进」授权内实现 + 独立验证；未提交前已由用户确认范围）。
+- 阶段状态：已实现并过 Validator（PASS WITH WARNINGS），待提交；未推送、未安装到消费项目。
+- 流程判定（R/S/A/H）：R1/R2/R3 不触发（增量 CLI + 版本戳，默认首次安装契约保持，upgrade 显式且状态文件保留、冲突需 --force 且备份，行为集中可局部测试）；A1 不触发；S1/S2 不触发；H1 未命中。
+- 未决后续事项（均不阻断、不标已解决）：R1/R2/R3（见 risk-register R-003）；安装迁移后仍缺「版本发布（tag+push）」与「安装到 Quant」两独立阶段（均需用户另行授权）。
+- 实施中出现新证据时：无。
+- 哪些新证据会重开决策：若要求跨平台/崩溃一致性/并发安全、或 R1/R2/R3 提升为验收要求、或要绑定未提交 diff 内容哈希作候选身份 → 重开。
+- 取代旧结论时：无。
