@@ -19,8 +19,9 @@ Lead 是项目执行主会话；Ally 是可选用户入口，启用时用户面�
 ## 接入项目
 
 1. 先核对目标项目现行的 `AGENTS.md`、权限与 Git 工作流。实际启用 Lead 的项目若没有本地完整协议，按 `AGENTS.md` 继承规则使用最近的上级已安装副本；**不必每个项目重复安装**。若项目安装自己的完整协议，只选该项目副本，上级副本的协作规则不叠加。
-2. 仅当工作空间首次需要自己的安装副本，或项目需要独立于上层的本地覆盖时，从本仓库运行 `python3 scripts/install.py --target "/path/to/consumer" --dry-run` 预览，再去掉 `--dry-run` 安装。脚本只复制已列出的静态协议与角色模板到**消费方** `.agents/agent-collaboration-kit/`，并在消费方 `AGENTS.md` 追加本地入口；不会覆盖已有安装、项目状态或源协议。工作空间安装需遵守该工作空间对全局配置文件的授权规则。
-3. 在目标项目的运行时配置角色、工具权限、共同工作目录和共享信箱路径；实际写信箱消息的角色须实测能安全读取精确 UTC 时间，不为取时放开通用 Bash。`.agents/` 保存安装的静态规则和空白状态模板；真实项目状态与运行消息应由该项目在 `.agent/` 管理，不把安装模板当作当前事实，也不覆盖既有状态。安装提示词本身不授予工具权限。
+2. 仅当工作空间首次需要自己的安装副本，或项目需要独立于上层的本地覆盖时，从本仓库运行 `python3 scripts/install.py --target "/path/to/consumer" --dry-run` 预览，再去掉 `--dry-run` 安装。脚本只复制已列出的静态协议与角色模板到**消费方** `.agents/agent-collaboration-kit/`，写入 `.kit-version.json` 版本戳（源提交、dirty 状态、安装时间），并在消费方 `AGENTS.md` 追加本地入口；不会覆盖已有安装、项目状态或源协议。工作空间安装需遵守该工作空间对全局配置文件的授权规则。
+   已有安装升级时使用 `python3 scripts/install.py --target "/path/to/consumer" --upgrade --dry-run` 预览，再去掉 `--dry-run`。升级读取 `.kit-version.json` 并分类 `add` / `unchanged` / `changed` / `restore` / `preserve`；状态文件只 `preserve`，缺失时从空白模板 `restore`，非普通文件（symlink/目录）时拒绝升级且不随 `--force` 删除；冲突静态文件需 `--force` 才覆盖。`--backup-dir` 可指定 `.agents/` 下的备份目录（默认 `.agents/agent-collaboration-kit.backup-<UTC 时间戳>/`），仅备份被覆盖的冲突静态文件。升级不写入或改动消费方 `.agent/` 运行数据；缺版本戳时升级会拒绝。
+3. 在目标项目的运行时配置角色、工具权限、共同工作目录和共享信箱路径；实际写信箱消息的角色须实测能安全读取精确 UTC 时间，不为取时放开通用 Bash。`.agents/` 保存安装的静态规则、版本戳和空白状态模板；真实项目状态与运行消息应由该项目在 `.agent/` 管理，不把安装模板当作当前事实，也不覆盖既有状态；升级器同样不会改动 `.agent/` 运行数据。安装提示词本身不授予工具权限。
 4. 独立会话的发信方在写入信箱后按消息协议输出可直接复制的交接通知，由用户原样转发给收件角色；消息写入不等于已送达，`received` 也不代表完成。自动通知属于独立的运行时接入工作，不能直接沿用用户转发 Auditor 请求时的授权语义。
 5. 用 `sandbox/` 的无生产副作用用例先检查协议，再在目标项目的隔离范围内做一次针对真实角色和工具权限的最小冒烟。Kit 内检查通过不能替代目标项目的验收。
 
@@ -34,6 +35,8 @@ Lead 是项目执行主会话；Ally 是可选用户入口，启用时用户面�
 python3 -B sandbox/verify_messages.py sandbox/fixtures/messages
 python3 -B -m unittest discover -s sandbox/tests -v
 ```
+
+安装/升级 CLI 也可先用一次性消费方目录做 dry-run：首次安装用 `python3 scripts/install.py --target "/path/to/consumer" --dry-run`；已有安装用 `--upgrade --dry-run` 查看分类、冲突和备份计划。
 
 检查器只判定已实现的结构规则，**不证明**消息作者身份、事实正确性、自动送达或工具权限已生效。消费项目的权限负例必须由相应角色实际调用工具，并保留工具返回；详情见[沙盒说明](sandbox/README.md)。
 
@@ -55,7 +58,7 @@ AGENTS.md                    本仓库维护入口（不复制给消费方）
   exchange/tasks/            首次使用时创建的运行消息目录；自行配置忽略与权限
   prompts/                   客户端无关的角色操作内容（唯一通用角色源）
 sandbox/                   可复用协议样例、检查器与项目接入冒烟用例
-scripts/install.py         将静态协议安装到消费方 .agents/ 并更新其 AGENTS.md
+scripts/install.py         首次安装或升级消费方 .agents/、写入版本戳并更新其 AGENTS.md
 integrations/opencode/      完整角色定义基线（派生适配，非自动运行配置）与核对说明
 integrations/codex/         Codex 适配计划（尚未接线，未实现）
 scripts/check_opencode_agents.py  只读比较七份基线和指定目录的定义
